@@ -1,0 +1,6 @@
+@FlyRankAI_Assignment1_HostAddress = http://localhost:5199
+
+GET {{FlyRankAI_Assignment1_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
