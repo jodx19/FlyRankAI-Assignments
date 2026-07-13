@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Report Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            display: none;
+        }
+        .status {
+            color: #666;
+            margin: 10px 0;
+        }
+        .download-link {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .download-link:hover {
+            background-color: #218838;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sales Report Generator</h1>
+        <p>Click the button below to generate a sales report PDF:</p>
+
+        <button onclick="generateReport()">Generate Report</button>
+
+        <div id="result" class="result">
+            <div id="status" class="status"></div>
+            <div id="checkStatus"></div>
+        </div>
+    </div>
+
+    <script>
+        async function generateReport() {
+            try {
+                const response = await fetch('/api/reports/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const resultDiv = document.getElementById('result');
+                const statusDiv = document.getElementById('status');
+                const checkStatusDiv = document.getElementById('checkStatus');
+
+                resultDiv.style.display = 'block';
+                statusDiv.innerHTML = `<span class="success">Report generation started!</span><br>Job ID: <strong>${data.jobId}</strong>`;
+
+                checkStatusDiv.innerHTML = '<p>Checking status...</p>';
+
+                checkReportStatus(data.jobId, checkStatusDiv);
+            } catch (error) {
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('status').innerHTML = `<span class="error">Error: ${error.message}</span>`;
+            }
+        }
+
+        async function checkReportStatus(jobId, checkStatusDiv) {
+            let attempts = 0;
+            const maxAttempts = 30;
+
+            const interval = setInterval(async () => {
+                attempts++;
+                try {
+                    const response = await fetch(`/api/reports/status/${jobId}`);
+                    const data = await response.json();
+
+                    if (data.status === 'Completed') {
+                        clearInterval(interval);
+                        checkStatusDiv.innerHTML = `
+                            <p class="success">Report is ready!</p>
+                            <a href="${data.downloadUrl}" class="download-link" download>Download PDF</a>
+                        `;
+                    } else {
+                        checkStatusDiv.innerHTML = `<p>Status: <strong>${data.status}</strong> (${attempts}s)</p>`;
+                    }
+
+                    if (attempts >= maxAttempts) {
+                        clearInterval(interval);
+                        checkStatusDiv.innerHTML = '<p class="error">Timeout waiting for report generation</p>';
+                    }
+                } catch (error) {
+                    checkStatusDiv.innerHTML = `<span class="error">Error checking status: ${error.message}</span>`;
+                    clearInterval(interval);
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
