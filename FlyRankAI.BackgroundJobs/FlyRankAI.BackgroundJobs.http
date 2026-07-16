@@ -1,0 +1,6 @@
+@FlyRankAI.BackgroundJobs_HostAddress = http://localhost:5201
+
+GET {{FlyRankAI.BackgroundJobs_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
