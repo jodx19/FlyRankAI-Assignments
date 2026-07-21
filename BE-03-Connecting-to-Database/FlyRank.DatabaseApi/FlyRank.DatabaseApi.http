@@ -1,0 +1,6 @@
+@FlyRank.DatabaseApi_HostAddress = http://localhost:5012
+
+GET {{FlyRank.DatabaseApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
