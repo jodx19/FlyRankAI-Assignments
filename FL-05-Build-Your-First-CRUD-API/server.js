@@ -1,9 +1,15 @@
 const express = require("express");
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./openapi.json");
+
 const app = express();
 const PORT = 3000;
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
+
+// Stage 5: Swagger UI setup at /docs
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Stage 2: In-memory task database
 const tasks = [
@@ -17,7 +23,7 @@ app.get("/", (req, res) => {
   res.json({
     name: "Task API",
     version: "1.0",
-    endpoints: ["/tasks"],
+    endpoints: ["/tasks", "/docs"],
   });
 });
 
@@ -101,11 +107,12 @@ app.delete("/tasks/:id", (req, res) => {
     return res.status(404).json({ error: `Task ${taskId} not found` });
   }
 
-  const [deletedTask] = tasks.splice(taskIndex, 1);
-  res.json(deletedTask);
+  tasks.splice(taskIndex, 1);
+  res.status(204).send();
 });
 
 // Start Server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:3000`);
+  console.log(`Swagger docs available at http://localhost:3000/docs`);
 });
