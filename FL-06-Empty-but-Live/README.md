@@ -23,7 +23,7 @@
 
 ## 📸 Verification Screenshot
 
-![Live Site Screenshot](./Screenshot%202026-08-02%20130050.png)
+![Live Site Screenshot](./live-screenshot.png)
 
 ---
 
