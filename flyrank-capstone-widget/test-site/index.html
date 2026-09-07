@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Site</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 40px; }
+        h1 { color: #333; }
+    </style>
+</head>
+<body>
+
+    <h1>Welcome to My Awesome Blog</h1>
+    <p>This is a website hosted on a completely different origin (e.g. port 8080 or a file:// protocol).</p>
+    
+    <!-- The widget will be injected here -->
+    <div id="flyrank-widget-container"></div>
+
+    <!-- 
+      You will need to replace the ID here with an actual widget ID generated from the dashboard API 
+      And change the port to match your local server if it's not 3000
+    -->
+    <script src="http://localhost:3000/widget.js?id=88e62c00-2d1a-44b9-8d13-9e4616347f14"></script>
+
+</body>
+</html>
