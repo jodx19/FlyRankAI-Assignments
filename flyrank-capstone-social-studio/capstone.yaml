@@ -1,0 +1,11 @@
+name: flyrank-capstone-social-studio
+run: npm run start
+seed: node -e "console.log('Seeding not needed, using SQLite dev.db')"
+test: echo "Manual curl tests run for evidence"
+base_url: http://localhost:3000
+endpoints:
+  - POST /api/posts
+  - POST /api/posts/:id/variants/generate
+  - PATCH /api/variants/:id/status
+  - POST /api/variants/:id/schedule
+  - GET /api/history

@@ -1,0 +1,125 @@
+{
+  "name": "Weekly Review Assistant",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "e6a100f7-5421-4f11-9492-4e89f897f267",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1,
+      "position": [
+        380,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are an expert productivity coach guiding me through my weekly review. Your workflow has two strict phases:\n1. Reflection Phase: Ask me briefly about what I accomplished and what challenges I faced this week. Wait for my response.\n2. Planning Phase: After I reply, use your tool to read my 'Goals Document'. Suggest a prioritized list of the top 3 to 5 tasks I should focus on this week based on those goals.\n\nRule: Always explain why a task was prioritized based on my goals. Never schedule tasks or add events without my explicit confirmation."
+        }
+      },
+      "id": "53e920d5-0f9c-49a0-9769-cf77dc7cdb9d",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        600,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {}
+      },
+      "id": "9d90fbcf-3c58-4ad0-bcae-2ecdfd90a7d9",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        560,
+        460
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "a9a7b937-25e1-45ea-8c29-3733d9ea50a0",
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.2,
+      "position": [
+        720,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "name": "read_goals_document",
+        "description": "Call this tool to read the user's quarterly and monthly goals from the goals document.",
+        "jsCode": "return `\\n## Quarterly Goals (Q3)\\n- **Goal 1:** Learn JavaScript and complete the core JS course.\\n- **Goal 2:** Build 3 functional AI agents using different platforms (n8n, Dify, etc.).\\n- **Goal 3:** Improve personal productivity by consistently doing weekly reviews.\\n\\n## Monthly Goals (August)\\n- Complete the \\\"Build the Agent\\\" assignment (FL-07).\\n- Publish one article on LinkedIn about AI agents.\\n- Organize my Todoist backlog.\\n\\n## Rules for Weekly Planning\\n- Prioritize tasks that directly move the needle on learning JavaScript.\\n- Limit new projects until the current assignments are finished.\\n- Ensure at least 5 hours of deep work are scheduled per week.\\n`;"
+      },
+      "id": "b3e0b8ab-f87c-486a-85b9-115f7b0a8eb1",
+      "name": "Read Goals Document (Tool)",
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.1,
+      "position": [
+        900,
+        480
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Goals Document (Tool)": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f7890b0e-6e84-4809-9fc6-9430c72c050a",
+  "id": "f5a044bc-23c3-42e7-9d7a-d0a5f97330a8",
+  "tags": []
+}
