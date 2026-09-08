@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Post {
+  id         String    @id @default(uuid())
+  content    String
+  sourceUrl  String?
+  createdAt  DateTime  @default(now())
+  variants   Variant[]
+}
+
+model Variant {
+  id            String         @id @default(uuid())
+  postId        String
+  platform      String         // telegram, x, linkedin
+  content       String
+  status        String         // draft, approved, rejected, published
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  post          Post           @relation(fields: [postId], references: [id])
+  scheduleSlots ScheduleSlot[]
+}
+
+model ScheduleSlot {
+  id             String           @id @default(uuid())
+  variantId      String
+  publishAt      DateTime
+  status         String           // pending, published, failed
+  idempotencyKey String           @unique
+  createdAt      DateTime         @default(now())
+  variant        Variant          @relation(fields: [variantId], references: [id])
+  history        PublishHistory[]
+}
+
+model PublishHistory {
+  id             String       @id @default(uuid())
+  scheduleSlotId String
+  attemptedAt    DateTime     @default(now())
+  resultStatus   String       // success, failed
+  responseDetails String?
+  scheduleSlot   ScheduleSlot @relation(fields: [scheduleSlotId], references: [id])
+}
